@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Inject } from '@nestjs/common';
 import { CreateBookDto } from './core/dto/books.dto';
-import { BookUseCase } from './use-case/book.use-case';
+import { BookService } from './application/book.service';
 import { Book } from './core/book-entities';
 
 
 @Controller('api/books')
 export class BooksController {
-    constructor(private readonly bookUseCase: BookUseCase) {}
+    constructor(private readonly bookUseCase: BookService) {}
 
     @Get()
     async getAllBooks(): Promise<Book[]> {

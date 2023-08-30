@@ -11,7 +11,6 @@ export class CreateUserDto {
     password: string;
 }
 
-
 export class LoginResponseDto {
     userId: string;
     token: string;

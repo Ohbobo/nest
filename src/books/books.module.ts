@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { BooksController } from './books.controller';
-import { BookUseCase } from './use-case/book.use-case';
+import { BookService } from './application/book.service';
 import { IBookRepository } from './core/repository/book-repository';
 import { InMemoryBook } from './core/data/data-service';
 
 @Module({
   controllers: [BooksController],
   providers: [
-    BookUseCase, 
-    { provide: 'IBookRepository', useClass: InMemoryBook},
+    { provide: BookService, useFactory: (repository: IBookRepository) => new BookService(repository), inject: ['BOOK_REPOSITORY']}, 
+    { provide: 'BOOK_REPOSITORY', useClass: InMemoryBook},
   ],
 })
 export class BooksModule {}

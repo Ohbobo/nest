@@ -1,17 +1,29 @@
-import { IsString, IsNotEmpty, IsNumber } from "class-validator";
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 
 export class CreateBookDto {
     @IsString()
-    id: string
-    // @IsString()
-    // title: string
-    // @IsString()
-    // author: string
-    // @IsString()
-    // genre: string
-    // @IsNumber()
-    // date: number
+    userId: string
+    @IsString()
+    title: string
+    @IsString()
+    author: string
+    @IsString()
+    genre: string
+    @IsNumber()
+    date: number
 }
 
-export class UpdatedBookDto extends PartialType(CreateBookDto) {}
+export class UpdatedBookDto {
+    @IsString()
+    id: string
+    @IsOptional()
+    @IsString()
+    title: string
+    @IsString()
+    author: string
+    @IsString()
+    genre: string
+    @IsNumber()
+    date: number
+}

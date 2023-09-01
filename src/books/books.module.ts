@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { BooksController } from './books.controller';
 import { BookService } from './application/book.service';
 import { IBookRepository } from './core/repository/book-repository';
-import { InMemoryBook } from './core/data/data-service';
+import { InMemoryBook } from './inMemory/in-memory-book';
 
 @Module({
   controllers: [BooksController],

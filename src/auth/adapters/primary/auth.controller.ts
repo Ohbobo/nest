@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { SignupUseCase } from './use-case/signup.use-case';
-import { LoginUseCase } from './use-case/login.auth.use-case';
-import { CreateUserDto, LoginResponseDto } from './core/dto/user.dto';
+import { SignupUseCase } from '../../core/use-case/signup.use-case';
+import { LoginUseCase } from '../../core/use-case/login.auth.use-case';
+import { CreateUserDto, LoginResponseDto } from '../../core/dto/user.dto';
 
 @Controller('api/auth')
 export class AuthController {
@@ -19,12 +19,12 @@ export class AuthController {
     @Post('login')
     async login(@Body() userDto: CreateUserDto): Promise<LoginResponseDto | null> {
         const { email, password } = userDto;
-        const res = await this.loginUseCase.login(email, password);
+        const user = await this.loginUseCase.login(email, password);
 
-        if(!res){
+        if(!user){
             throw new UnauthorizedException('Invalide');
         }
-        return res;
+        return user;
     }
     
 }

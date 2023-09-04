@@ -3,8 +3,6 @@ import { PartialType } from "@nestjs/mapped-types";
 
 export class CreateBookDto {
     @IsString()
-    userId: string
-    @IsString()
     title: string
     @IsString()
     author: string

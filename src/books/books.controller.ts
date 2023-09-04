@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuard
 import { CreateBookDto, UpdatedBookDto } from './core/dto/books.dto';
 import { BookService } from './application/book.service';
 import { Book } from './core/interface/book-entities';
-import { AuthMiddleware } from 'src/auth/adapters/middleware/auth/authMiddleware.service';
+import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
 
 
 @Controller('api/books')
@@ -24,7 +24,7 @@ export class BooksController {
     }
 
     @Post()
-    @UseGuards(AuthMiddleware)
+    @UseGuards(AuthGuard)
     async createBook(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<Book> {
         const userId = req.user.userId;
         const book = await this.bookService.create(createBookDto, userId);

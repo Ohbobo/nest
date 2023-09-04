@@ -4,22 +4,19 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
 export class LoginUseCase {
-    constructor(
-        private readonly userRepository: IAuthRepository,
-        ) {}
+    constructor(private readonly userRepository: IAuthRepository) { }
 
-    async login(email: string, password: string): Promise<LoginResponseDto | null> {
+    async execute(email: string, password: string): Promise<LoginResponseDto | null> {
         const user = await this.userRepository.getUserByEmail(email);
+        const passwordMatch = await bcrypt.compare(password, user.password);
 
-        if(!user){
+        if (!user || !passwordMatch) {
             throw new Error('Invalide');
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if(passwordMatch) {
-            const token = jwt.sign({ userId: user.userId }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' });
-            return { userId: user.userId, token };
-        }
-        return null;
+        // TODO 'RANDOM_SECRET_KEY' comes from some configuration service (.env) 
+        // @see https://docs.nestjs.com/techniques/configuration#configuration
+        const token = jwt.sign({ userId: user.userId }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' });
+        return { userId: user.userId, token };
     }
 }

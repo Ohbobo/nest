@@ -17,6 +17,7 @@ export class InMemoryBook implements IBookRepository {
     async createBook(book: Book, userId: string): Promise<Book> {
         const completeBook = { ...book, userId }; 
         this.books.push(book);
+        console.log(this.books);
         return completeBook;
     }
 

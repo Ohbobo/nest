@@ -8,10 +8,12 @@ import { IAuthRepository } from "../core/repository/auth-repository";
 import { MongooseAuthRepository } from "src/database/repository/auth.mongoose";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserSchema } from "src/database/schema/user-schema";
+import { JwtService } from "../adapters/middleware/jwt/jwt-service";
 
 @Module({
     controllers: [AuthController], 
     providers: [
+        JwtService,
         { 
             provide: APP_PIPE, 
             useClass: ValidationPipe },
@@ -30,7 +32,8 @@ import { UserSchema } from "src/database/schema/user-schema";
     ],
     imports: [
         MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-    ]
+    ],
+    exports: [JwtService],
 })
 
 export class AuthModule {}

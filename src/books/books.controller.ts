@@ -1,12 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, NotFoundException, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
+import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req } from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from './core/dto/books.dto';
 import { BookService } from './application/book.service';
 import { Book } from './core/interface/book-entities';
+import { AuthMiddleware } from 'src/auth/adapters/middleware/auth/authMiddleware.service';
 
 
 @Controller('api/books')
-@UseGuards(AuthGuard)
 export class BooksController {
     constructor(private readonly bookService: BookService) {}
 
@@ -24,12 +23,15 @@ export class BooksController {
         return book;
     }
 
-    // @Post()
-    // async addBook(@Body() createBookDto: CreateBookDto, @Req() req: Request): Promise<Book> {
-    //     const userId = req.user.userId;
-    // }
+    @Post()
+    @UseGuards(AuthMiddleware)
+    async createBook(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<Book> {
+        const userId = req.user.userId;
+        const book = await this.bookService.create(createBookDto, userId);
+        return book;
+    }
 
-    @Patch(':id')
+    @Put(':id')
     async updateBook(@Param('id') id: string, @Body() updatedBookDto: UpdatedBookDto): Promise<Book | undefined> {
         return this.bookService.updateBook(id, updatedBookDto);
     }

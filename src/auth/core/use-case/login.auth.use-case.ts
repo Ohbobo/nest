@@ -1,11 +1,11 @@
 import { IAuthRepository } from '../repository/auth-repository';
 import { LoginResponseDto } from '../dto/user.dto';
-import { JwtService } from 'src/auth/adapters/middleware/jwt/jwt-service';
+import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 
 export class LoginUseCase {
     constructor(
         private readonly userRepository: IAuthRepository,
-        private readonly jwtService: JwtService,
         ) {}
 
     async login(email: string, password: string): Promise<LoginResponseDto | null> {
@@ -15,13 +15,11 @@ export class LoginUseCase {
             throw new Error('Invalide');
         }
 
-        const passwordMatch = await this.jwtService.comparePassword(password, user.password);
-
-        if(passwordMatch){
-            const token = await this.jwtService.createToken({ userId: user.userId });
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if(passwordMatch) {
+            const token = jwt.sign({ userId: user.userId }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' });
             return { userId: user.userId, token };
         }
         return null;
     }
-    
 }

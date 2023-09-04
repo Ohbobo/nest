@@ -13,7 +13,8 @@ export class AuthController {
     @Post('signup')
     async signup(@Body() userDto: CreateUserDto): Promise<void> {
         const { email, password } = userDto;
-        await this.signupUseCase.signup(email, password);
+        const user = await this.signupUseCase.signup(email, password);
+        return user;
     }
 
     @Post('login')

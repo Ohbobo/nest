@@ -8,7 +8,6 @@ import { IAuthRepository } from "../core/repository/auth-repository";
 import { MongooseAuthRepository } from "src/database/repository/auth.mongoose";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserSchema } from "src/database/schema/user-schema";
-import { JwtService } from "../adapters/middleware/jwt/jwt-service";
 
 @Module({
     controllers: [AuthController], 
@@ -22,7 +21,7 @@ import { JwtService } from "../adapters/middleware/jwt/jwt-service";
         },
         { 
             provide: LoginUseCase,
-            useFactory: (repository: IAuthRepository, jwtService: JwtService) => new LoginUseCase(repository, jwtService), inject: ['USER_REPOSITORY']
+            useFactory: (repository: IAuthRepository) => new LoginUseCase(repository), inject: ['USER_REPOSITORY']
         },
         {
             provide: 'USER_REPOSITORY',

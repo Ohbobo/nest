@@ -14,9 +14,10 @@ export class InMemoryBook implements IBookRepository {
         return this.books.find(book => book.userId === id);
     }
 
-    async createBook(book: Book): Promise<Book> {
+    async createBook(book: Book, userId: string): Promise<Book> {
+        const completeBook = { ...book, userId }; 
         this.books.push(book);
-        return book;
+        return completeBook;
     }
 
     async updateBook(book: Book): Promise<Book | undefined> {

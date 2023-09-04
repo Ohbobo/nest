@@ -1,4 +1,4 @@
-import { UpdatedBookDto } from '../core/dto/books.dto';
+import { CreateBookDto, UpdatedBookDto } from '../core/dto/books.dto';
 import { Book } from '../core/interface/book-entities';
 import { IBookRepository } from '../core/repository/book-repository';
 
@@ -13,9 +13,10 @@ export class BookService {
         return this.bookRepository.findById(id);
     }
 
-    async create(book: Book): Promise<Book> {
-        this.bookRepository.createBook(book);
-        return book;
+    async create(createBookDto: CreateBookDto, userId: string): Promise<Book> {
+        const book: Book = { ...createBookDto, userId: userId }
+        const createdBook = await this.bookRepository.createBook(book, userId);
+        return createdBook;
     }
 
     async updateBook(id: string, updatedBookDto: UpdatedBookDto): Promise<Book | undefined> {

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException } from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from '../../core/dto/books.dto';
 import { BookService } from '../../core/application/book.service';
-import { Book } from '../../core/interface/book-entities';
+import { IBook } from '../../core/interface/book-entities';
 import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
 
 
@@ -10,12 +10,12 @@ export class BooksController {
     constructor(private readonly bookService: BookService) {}
 
     @Get()
-    async getAllBooks(): Promise<Book[]> {
+    async getAllBooks(): Promise<IBook[]> {
         return this.bookService.getAllBooks();
     }
 
     @Get(':id')
-    async getOneBook(@Param('id') id: string): Promise<Book | undefined> {
+    async getOneBook(@Param('id') id: string): Promise<IBook | undefined> {
         const book = await this.bookService.getOneBook(id);
         if(!book) {
             throw new NotFoundException('livre non trouvé')
@@ -25,7 +25,7 @@ export class BooksController {
 
     @Post()
     @UseGuards(AuthGuard)
-    async createBook(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<Book> {
+    async createBook(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<IBook> {
         const userId = req.user.userId;
         const book = await this.bookService.create(createBookDto, userId);
         return book;
@@ -33,7 +33,7 @@ export class BooksController {
 
     @Put(':id')
     @UseGuards(AuthGuard)
-    async updateBook(@Param('id') id: string, @Body() updatedBookDto: UpdatedBookDto, @Req() req: any): Promise<Book> {
+    async updateBook(@Param('id') id: string, @Body() updatedBookDto: UpdatedBookDto, @Req() req: any): Promise<IBook> {
         const userId = req.user.userId;
         const isOwner = await this.bookService.isBookOwner(id, userId);
 

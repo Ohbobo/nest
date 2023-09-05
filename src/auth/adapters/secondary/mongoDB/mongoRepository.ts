@@ -7,7 +7,7 @@ import { IAuthRepository } from 'src/auth/core/repository/auth-repository';
 
 @Injectable()
 export class MongooseAuthRepository implements IAuthRepository {
-    constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
+    constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
     async getUserByEmail(email: string): Promise<UserWithId | null> {
         const user = await this.userModel.findOne({ email }).exec();

@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common'
-import { Book } from "../../../core/interface/book-entities";
+import { IBook } from "../../../core/interface/book-entities";
 import { IBookRepository } from "../../../core/repository/book-repository";
 
 @Injectable()
 export class InMemoryBook implements IBookRepository {
-    private readonly books: Book[] = [];
+    private readonly books: IBook[] = [];
 
-    async findAll(): Promise<Book[]> {
+    async findAll(): Promise<IBook[]> {
         return this.books;
     }
 
-    async findById(id: string): Promise<Book | undefined> {
+    async findById(id: string): Promise<IBook | undefined> {
         return this.books.find(book => book.id === id);
     }
 
-    async createBook(book: Book, userId: string): Promise<Book> {
+    async createBook(book: IBook, userId: string): Promise<IBook> {
         const completeBook = { ...book, userId }; 
         this.books.push(book);
         return completeBook;
     }
 
-    async updateBook(book: Book): Promise<Book | undefined> {
+    async updateBook(book: IBook): Promise<IBook | undefined> {
         const index = this.books.findIndex(b => b.id === book.id);
         if(index === -1) {
             return undefined;

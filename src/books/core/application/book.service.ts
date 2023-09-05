@@ -1,21 +1,21 @@
 import { CreateBookDto, UpdatedBookDto } from '../dto/books.dto';
-import { Book } from '../interface/book-entities';
+import { IBook } from '../interface/book-entities';
 import { IBookRepository } from '../repository/book-repository';
 import { v4 as uuidv4 } from 'uuid';
 
 export class BookService {
     constructor(private readonly bookRepository: IBookRepository) {}
 
-    async getAllBooks(): Promise<Book[]> {
+    async getAllBooks(): Promise<IBook[]> {
         return this.bookRepository.findAll();
     }
 
-    async getOneBook(id: string): Promise<Book> {
+    async getOneBook(id: string): Promise<IBook> {
         return this.bookRepository.findById(id);
     }
 
-    async create(createBookDto: CreateBookDto, userId: string): Promise<Book> {
-        const newBook: Book = { 
+    async create(createBookDto: CreateBookDto, userId: string): Promise<IBook> {
+        const newBook: IBook = { 
             id: uuidv4(),
             userId: userId, 
             ...createBookDto, 
@@ -24,7 +24,7 @@ export class BookService {
         return createdBook;
     }
 
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<Book> {
+    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<IBook> {
         const findABook = await this.bookRepository.findById(id);
         if(!findABook){
             throw new Error("Ce livre n'existe pas");

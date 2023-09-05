@@ -1,5 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { PartialType } from "@nestjs/mapped-types";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
 export class CreateBookDto {
     @IsString()
@@ -13,8 +12,6 @@ export class CreateBookDto {
 }
 
 export class UpdatedBookDto {
-    @IsString()
-    id: string
     @IsOptional()
     @IsString()
     title: string

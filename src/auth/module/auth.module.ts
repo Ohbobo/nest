@@ -3,11 +3,11 @@ import { APP_PIPE } from "@nestjs/core";
 import { AuthController } from "../adapters/primary/auth.controller";
 import { LoginUseCase } from "../core/use-case/login.auth.use-case";
 import { SignupUseCase } from "../core/use-case/signup.use-case";
-import { InMemoryAuthRepository } from "../inMemory/InMemoryAuth";
+import { InMemoryAuthRepository } from "../adapters/secondary/inMemory/InMemoryAuth";
 import { IAuthRepository } from "../core/repository/auth-repository";
-import { MongooseAuthRepository } from "src/database/repository/auth.mongoose";
+import { MongooseAuthRepository } from "../adapters/secondary/mongoDB/mongoRepository";
 import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "src/database/schema/user-schema";
+import { UserSchema } from "src/auth/adapters/secondary/mongoDB/mongoUserEntity";
 import { JwtService } from "../adapters/middleware/jwt/jwt-service";
 
 @Module({

@@ -1,6 +1,7 @@
-import { CreateBookDto, UpdatedBookDto } from '../core/dto/books.dto';
-import { Book } from '../core/interface/book-entities';
-import { IBookRepository } from '../core/repository/book-repository';
+import { CreateBookDto, UpdatedBookDto } from '../dto/books.dto';
+import { Book } from '../interface/book-entities';
+import { IBookRepository } from '../repository/book-repository';
+import { v4 as uuidv4 } from 'uuid';
 
 export class BookService {
     constructor(private readonly bookRepository: IBookRepository) {}
@@ -14,20 +15,22 @@ export class BookService {
     }
 
     async create(createBookDto: CreateBookDto, userId: string): Promise<Book> {
-        const book: Book = { ...createBookDto, userId: userId }
-        const createdBook = await this.bookRepository.createBook(book, userId);
+        const newBook: Book = { 
+            id: uuidv4(),
+            userId: userId, 
+            ...createBookDto, 
+        };
+        const createdBook = await this.bookRepository.createBook(newBook, userId);
         return createdBook;
     }
 
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto): Promise<Book | undefined> {
+    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<Book> {
         const findABook = await this.bookRepository.findById(id);
         if(!findABook){
-            return undefined;
+            throw new Error("Ce livre n'existe pas");
         }
-
+        
         const updatedBook = { ...findABook, ...updatedBookDto };
-        updatedBook.id = findABook.userId;
-
         const saveBook = await this.bookRepository.updateBook(updatedBook);
         return saveBook;
     }
@@ -40,5 +43,14 @@ export class BookService {
         }
 
         await this.bookRepository.deleteBook(id);
+    }
+
+    async isBookOwner(id: string, userId: string): Promise<boolean> {
+        const book = await this.bookRepository.findById(id);
+        if(!book || !book.userId) {
+            return false;
+        }
+
+        return book.userId === userId;
     }
 }

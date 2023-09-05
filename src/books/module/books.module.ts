@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BooksController } from './books.controller';
-import { BookService } from './application/book.service';
-import { IBookRepository } from './core/repository/book-repository';
-import { InMemoryBook } from './inMemory/in-memory-book';
+import { BooksController } from '../adapters/primary/books.controller';
+import { BookService } from '../core/application/book.service';
+import { IBookRepository } from '../core/repository/book-repository';
+import { InMemoryBook } from '../adapters/secondary/inMemory/in-memory-book';
 import { AuthModule } from 'src/auth/module/auth.module';
 
 @Module({

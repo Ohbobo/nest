@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { BooksModule } from './books/books.module';
+import { BooksModule } from './books/module/books.module';
 import { AuthModule } from './auth/module/auth.module';
 import { DatabaseModule } from './database/database.module';
 

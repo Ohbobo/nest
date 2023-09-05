@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserWithId } from '../core/interface/user-interface';
-import { IAuthRepository } from '../core/repository/auth-repository';
+import { UserWithId } from '../../../core/interface/user-interface';
+import { IAuthRepository } from '../../../core/repository/auth-repository';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

@@ -6,6 +6,7 @@ import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { MulterConfig } from '../secondary/middleware/multerConfig';
 
 
 @Controller('api/books')
@@ -18,17 +19,17 @@ export class BooksController {
     }
 
     @Get(':id')
-    async getOneBook(@Param('id') id: string): Promise<IBook | undefined> {
-        const book = await this.bookService.getOneBook(id);
-        if(!book) {
+    async getOneBook(@Param('id') id: string): Promise<IBook> {
+        const bookById = await this.bookService.getOneBook(id);
+        if(!bookById) {
             throw new NotFoundException('livre non trouvé')
         }
-        return book;
+        return bookById;
     }
 
     @Post()
     @UseGuards(AuthGuard)
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('file', MulterConfig))
     async createBook(
         @Body() createBookDto: CreateBookDto, 
         @Req() req: any,
@@ -36,8 +37,8 @@ export class BooksController {
         ): Promise<IBook>
         {
         const userId = req.user.userId;
-        const imageUrl = `images/${file.filename}`;
-        const book = await this.bookService.create(createBookDto, userId, imageUrl);
+        const imageUrl = `./images/${file.filename}`;
+        const book = await this.bookService.createBook(createBookDto, userId, imageUrl);
         return book;
     }
 

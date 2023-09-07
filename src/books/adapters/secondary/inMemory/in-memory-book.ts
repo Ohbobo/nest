@@ -10,13 +10,13 @@ export class InMemoryBook implements IBookRepository {
         return this.books;
     }
 
-    async findById(id: string): Promise<IBook | undefined> {
+    async findById(id: string): Promise<IBook> {
         return this.books.find(book => book.id === id);
     }
 
     async createBook(book: IBook, userId: string, imageUrl: string): Promise<IBook> {
         const completeBook = { ...book, userId, imageUrl }; 
-        this.books.push(book);
+        this.books.push(completeBook);
         return completeBook;
     }
 

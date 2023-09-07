@@ -11,19 +11,20 @@ export class BookService {
     }
 
     async getOneBook(id: string): Promise<IBook> {
+        console.log(id);
         return this.bookRepository.findById(id);
     }
 
-    async create(createBookDto: CreateBookDto, userId: string, imageUrl: string): Promise<IBook> {
+    async createBook(createBookDto: CreateBookDto, userId: string, imageUrl: string): Promise<IBook> {
         const newBook: IBook = { 
-            id: uuidv4(),
-            userId: userId,
-            imageUrl: imageUrl, 
-            ...createBookDto, 
+          id: uuidv4(),
+          userId: userId,
+          imageUrl: imageUrl, 
+          ...createBookDto, 
         };
         const createdBook = await this.bookRepository.createBook(newBook, userId, imageUrl);
         return createdBook;
-    }
+      }
 
     async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<IBook> {
         const findABook = await this.bookRepository.findById(id);

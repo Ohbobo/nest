@@ -5,14 +5,26 @@ export class Book {
     @Prop({ required: true, unique: true })
     title: string;
 
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     author: string;
-
+    
     @Prop({ required: true, unique: true })
+    imageUrl: string;
+    
+    @Prop({ required: true })
+    year: number;
+    
+    @Prop({ required: true })
     genre: string;
 
-    @Prop({ required: true, unique: true })
-    date: number;
+    @Prop({ required: true })
+    ratings: [{
+        userId: string;
+        grade: number;
+    }]
+
+    @Prop({ required: true })
+    averageRating: number
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

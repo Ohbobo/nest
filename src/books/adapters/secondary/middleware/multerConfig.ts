@@ -1,6 +1,5 @@
 import { diskStorage } from 'multer';
 import { Request } from 'express';
-import path = require('path');
 
 const MIME_TYPES: Record<string, string> = {
   'image/jpg': 'jpg',
@@ -9,30 +8,30 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 const storage = diskStorage({
-  destination: (
-    req: Request,
-    file: Express.Multer.File,
-    callback: (error: Error | null, destination: string) => void
-  ) => {
-    callback(null, 'images');
-  },
+  destination: './images',
   filename: (
     req: Request,
     file: Express.Multer.File,
     callback: (error: Error | null, filename: string) => void
-  ) => {
+) => {
+    if (!file.originalname || file.originalname.trim() === '') {
+        callback(new Error('Invalid file name'), '');
+        return;
+    }
+
     const name: string = file.originalname.split(' ').join('_');
-    const extension: string | undefined = MIME_TYPES[file.mimetype];
+    const extension: string = MIME_TYPES[file.mimetype];
 
     if (!extension) {
-      callback(new Error('Invalid file type'), '');
-      return;
+        callback(new Error('Format invalide'), '');
+        return;
     }
 
     callback(null, name + Date.now() + '.' + extension);
-  },
+},
+
 });
 
-export const multerConfig = {
+export const MulterConfig = {
   storage: storage,
 };

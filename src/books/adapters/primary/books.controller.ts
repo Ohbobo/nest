@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from '../../core/dto/books.dto';
 import { BookService } from '../../core/application/book.service';
 import { IBook } from '../../core/interface/book-entities';
 import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 
 @Controller('api/books')
@@ -25,9 +28,16 @@ export class BooksController {
 
     @Post()
     @UseGuards(AuthGuard)
-    async createBook(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<IBook> {
+    @UseInterceptors(FileInterceptor('file'))
+    async createBook(
+        @Body() createBookDto: CreateBookDto, 
+        @Req() req: any,
+        @UploadedFile() file: Express.Multer.File,
+        ): Promise<IBook>
+        {
         const userId = req.user.userId;
-        const book = await this.bookService.create(createBookDto, userId);
+        const imageUrl = `images/${file.filename}`;
+        const book = await this.bookService.create(createBookDto, userId, imageUrl);
         return book;
     }
 
@@ -55,4 +65,24 @@ export class BooksController {
         
         await this.bookService.deleteBook(id);
     }
+
+    @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './images', // Le dossier où les images seront stockées
+        filename: (req, file, callback) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          return callback(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return { imagePath: `images/${file.filename}` };
+  }
 }
+

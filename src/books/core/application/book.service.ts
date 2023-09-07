@@ -14,13 +14,14 @@ export class BookService {
         return this.bookRepository.findById(id);
     }
 
-    async create(createBookDto: CreateBookDto, userId: string): Promise<IBook> {
+    async create(createBookDto: CreateBookDto, userId: string, imageUrl: string): Promise<IBook> {
         const newBook: IBook = { 
             id: uuidv4(),
-            userId: userId, 
+            userId: userId,
+            imageUrl: imageUrl, 
             ...createBookDto, 
         };
-        const createdBook = await this.bookRepository.createBook(newBook, userId);
+        const createdBook = await this.bookRepository.createBook(newBook, userId, imageUrl);
         return createdBook;
     }
 

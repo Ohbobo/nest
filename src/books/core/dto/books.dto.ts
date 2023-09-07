@@ -8,7 +8,13 @@ export class CreateBookDto {
     @IsString()
     genre: string
     @IsNumber()
-    date: number
+    year: number
+    @IsString()
+    imageUrl: string
+    ratings: [{
+        userId: string,
+        grade: number,
+    }]
 }
 
 export class UpdatedBookDto {
@@ -20,5 +26,11 @@ export class UpdatedBookDto {
     @IsString()
     genre: string
     @IsNumber()
-    date: number
+    year: number
+    @IsString()
+    imageUrl: string
+    ratings: [{
+        userId: string,
+        grade: number,
+    }]
 }

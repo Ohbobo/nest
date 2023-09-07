@@ -4,5 +4,10 @@ export interface IBook {
     title: string;
     author: string;
     genre: string;
-    date: number;
+    year: number;
+    imageUrl: string;
+    ratings: [{
+        userId: string,
+        grade: number,
+    }]
 }

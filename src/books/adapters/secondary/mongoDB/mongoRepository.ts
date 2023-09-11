@@ -28,7 +28,7 @@ export class MongooseBookRepository implements IBookRepository {
     }
 
     async updateBook(book: IBook): Promise<IBook> {
-        const updatedBook = await this.bookModel.findByIdAndUpdate(book.id, book, { new: true }).exec();
+        const updatedBook = await this.bookModel.findByIdAndUpdate(book._id, book, { new: true }).exec();
         return updatedBook ? updatedBook.toJSON() as IBook : undefined;
     }
 

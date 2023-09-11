@@ -17,7 +17,7 @@ export class BookService {
 
     async createBook(createBookDto: CreateBookDto, userId: string, imageUrl: string): Promise<IBook> {
         const newBook: IBook = { 
-          id: uuidv4(),
+          _id: uuidv4(),
           userId: userId,
           imageUrl: imageUrl, 
           ...createBookDto, 

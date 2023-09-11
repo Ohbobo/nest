@@ -11,17 +11,17 @@ export class InMemoryBook implements IBookRepository {
     }
 
     async findById(id: string): Promise<IBook> {
-        return this.books.find(book => book.id === id);
+        return this.books.find(book => book._id === id);
     }
 
     async createBook(book: IBook, userId: string, imageUrl: string): Promise<IBook> {
-        const completeBook = { ...book, userId, imageUrl }; 
+        const completeBook = { ...book, userId, imageUrl };
         this.books.push(completeBook);
         return completeBook;
     }
 
     async updateBook(book: IBook): Promise<IBook | undefined> {
-        const index = this.books.findIndex(b => b.id === book.id);
+        const index = this.books.findIndex(b => b._id === book._id);
         if(index === -1) {
             return undefined;
         }
@@ -31,7 +31,7 @@ export class InMemoryBook implements IBookRepository {
     }
 
     async deleteBook(id: string): Promise<void> {
-        const index = this.books.findIndex(book => book.id === id);
+        const index = this.books.findIndex(book => book._id === id);
 
         if(index !== -1) {
             this.books.splice(index, 1);

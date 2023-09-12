@@ -9,5 +9,6 @@ export interface IBook {
     ratings: [{
         userId: string,
         grade: number,
-    }]
+    }],
+    averageRating: number,
 }

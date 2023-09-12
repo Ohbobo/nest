@@ -47,15 +47,24 @@ export class BooksController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  async updateBook(@Param('id') id: string, @Body() updatedBookDto: UpdatedBookDto, @Req() req: any): Promise<IBook> {
+  @UseInterceptors(FileInterceptor('image', MulterConfig))
+  async updateBook(
+    @Param('id') id: string,
+    @Body() updatedBookDto: UpdatedBookDto,
+    @Req() req: any,
+    @UploadedFile() imageFile: Express.Multer.File,
+  ): Promise<IBook> {
     const userId = req.user.userId;
     const isOwner = await this.bookService.isBookOwner(id, userId);
-
+  
     if (!isOwner) {
       throw new ForbiddenException("Vous ne pouvez pas modifier ce livre");
     }
-    return this.bookService.updateBook(id, updatedBookDto, userId);
+
+    const imageUrl = `${process.env.APP_URL}/images/${imageFile.filename}`;
+    return this.bookService.updateBook(id, updatedBookDto, userId, imageUrl);
   }
+  
 
   @Delete(':id')
   @UseGuards(AuthGuard)

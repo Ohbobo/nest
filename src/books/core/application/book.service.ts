@@ -2,6 +2,7 @@ import { CreateBookDto, UpdatedBookDto } from '../dto/books.dto';
 import { IBook } from '../interface/book-entities';
 import { IBookRepository } from '../repository/book-repository';
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 
 export class BookService {
     constructor(private readonly bookRepository: IBookRepository) {}
@@ -26,13 +27,21 @@ export class BookService {
         return createdBook;
       }
 
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<IBook> {
-        const findABook = await this.bookRepository.findById(id);
-        if(!findABook){
+    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, imageUrl?: string): Promise<IBook> {
+        const findABookWithId = await this.bookRepository.findById(id);
+        if(!findABookWithId){
             throw new Error("Ce livre n'existe pas");
         }
-        
-        const updatedBook = { ...findABook, ...updatedBookDto };
+
+        if(imageUrl) {
+            if(findABookWithId.imageUrl){
+                const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+                fs.unlinkSync(`./images/${oldImageToReplace}`);
+            }
+            findABookWithId.imageUrl = imageUrl;
+        }
+
+        const updatedBook = { ...findABookWithId, ...updatedBookDto };
         const saveBook = await this.bookRepository.updateBook(updatedBook);
         return saveBook;
     }
@@ -42,6 +51,11 @@ export class BookService {
 
         if(!findABook) {
             throw new Error("Ce livre n'existe pas");
+        }
+
+        if(findABook.imageUrl){
+            const imageToDelete = findABook.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+            fs.unlinkSync(`./images/${imageToDelete}`);
         }
 
         await this.bookRepository.deleteBook(id);
@@ -55,4 +69,5 @@ export class BookService {
 
         return book.userId === userId;
     }
+
 }

@@ -16,7 +16,7 @@ export class LoginUseCase {
 
         // TODO 'RANDOM_SECRET_KEY' comes from some configuration service (.env) 
         // @see https://docs.nestjs.com/techniques/configuration#configuration
-        const token = jwt.sign({ userId: user.userId }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' });
+        const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY, { expiresIn: '24h' });
         return { userId: user.userId, token };
     }
 }

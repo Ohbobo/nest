@@ -8,7 +8,7 @@ dotenv.config();
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    MongooseModule.forRoot('mongodb+srv://agentheo:DpENWosEnRtghWhg@cluster0.5ge86ol.mongodb.net/?retryWrites=true&w=majority'),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
   ],
   providers: [...databaseProviders],

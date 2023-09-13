@@ -1,11 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from '../../core/dto/books.dto';
 import { BookService } from '../../core/application/book.service';
 import { IBook } from '../../core/interface/book-entities';
 import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { MulterConfig } from '../secondary/middleware/multerConfig';
 
 
@@ -16,6 +14,17 @@ export class BooksController {
   @Get()
   async getAllBooks(): Promise<IBook[]> {
     return this.bookService.getAllBooks();
+  }
+  
+  @Get('/bestrating')
+  async getBestRatingBooks() {
+    const bestRatingBooks = await this.bookService.getBestRating();
+
+    if (!bestRatingBooks || bestRatingBooks.length === 0) {
+      throw new NotFoundException('Aucun livre trouvé');
+    }
+
+    return bestRatingBooks;
   }
 
   @Get(':id')
@@ -65,7 +74,6 @@ export class BooksController {
     return this.bookService.updateBook(id, updatedBookDto, userId, imageUrl);
   }
   
-
   @Delete(':id')
   @UseGuards(AuthGuard)
   async deleteBook(@Param('id') id: string, @Req() req: any): Promise<void> {
@@ -79,23 +87,23 @@ export class BooksController {
     await this.bookService.deleteBook(id);
   }
 
-  @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './images',
-        filename: (req, file, callback) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          return callback(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
-    }),
-  )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return { imagePath: `images/${file.filename}` };
+  @Post(':id/rating')
+  @UseGuards(AuthGuard)
+    async rateABook(
+      @Param('id') id: string,
+      @Body() requestBody: any,
+      @Req() req: any
+    ): Promise<IBook> {
+      const userId = req.user.userId;
+      const { rating } = requestBody; 
+
+      const bookToRate = await this.bookService.rateABook(id, userId, rating);
+
+      if (!bookToRate) {
+        throw new NotFoundException('Livre non trouvé');
+      }
+
+      return bookToRate;
   }
 }
 

@@ -70,4 +70,38 @@ export class BookService {
         return book.userId === userId;
     }
 
+    async getBestRating(): Promise<IBook[]> {
+        const limit = 3;
+        const allBooks = await this.bookRepository.findAll();
+        
+        const sortedBooks = allBooks.sort((a, b) => b.averageRating - a.averageRating).slice(0, limit);
+    
+        return sortedBooks;
+      }
+
+    async rateABook(id: string, userId: string, grade: number): Promise<IBook> {
+        const book = await this.bookRepository.findById(id);
+
+        if (!book) {
+            throw new Error('Le livre non trouvé');
+        }
+        
+        const existingRating = book.ratings.find((r) => r.userId === userId);
+      
+        if (existingRating) {
+            throw new Error('Vous avez déjà noté ce livre');
+        }
+      
+        if (grade < 1 || grade > 5) {
+          throw new Error('La note doit être entre 1 et 5 étoiles');
+        }
+      
+        book.ratings.push({ userId, grade: grade });
+
+        const totalRating = book.ratings.reduce((sum, r) => sum + (r.grade || 0), 0);
+        book.averageRating = totalRating / book.ratings.length;
+      
+        return await this.bookRepository.updateBook(book);
+    }
+
 }

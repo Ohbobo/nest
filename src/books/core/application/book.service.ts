@@ -2,6 +2,7 @@ import { CreateBookDto, UpdatedBookDto } from '../dto/books.dto';
 import { IBook } from '../interface/book-entities';
 import { IBookRepository } from '../repository/book-repository';
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 
 export class BookService {
     constructor(private readonly bookRepository: IBookRepository) {}
@@ -26,13 +27,21 @@ export class BookService {
         return createdBook;
       }
 
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string): Promise<IBook> {
-        const findABook = await this.bookRepository.findById(id);
-        if(!findABook){
+    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, imageUrl?: string): Promise<IBook> {
+        const findABookWithId = await this.bookRepository.findById(id);
+        if(!findABookWithId){
             throw new Error("Ce livre n'existe pas");
         }
-        
-        const updatedBook = { ...findABook, ...updatedBookDto };
+
+        if(imageUrl) {
+            if(findABookWithId.imageUrl){
+                const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+                fs.unlinkSync(`./images/${oldImageToReplace}`);
+            }
+            findABookWithId.imageUrl = imageUrl;
+        }
+
+        const updatedBook = { ...findABookWithId, ...updatedBookDto };
         const saveBook = await this.bookRepository.updateBook(updatedBook);
         return saveBook;
     }
@@ -42,6 +51,11 @@ export class BookService {
 
         if(!findABook) {
             throw new Error("Ce livre n'existe pas");
+        }
+
+        if(findABook.imageUrl){
+            const imageToDelete = findABook.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+            fs.unlinkSync(`./images/${imageToDelete}`);
         }
 
         await this.bookRepository.deleteBook(id);
@@ -55,4 +69,39 @@ export class BookService {
 
         return book.userId === userId;
     }
+
+    async getBestRating(): Promise<IBook[]> {
+        const limit = 3;
+        const allBooks = await this.bookRepository.findAll();
+        
+        const sortedBooks = allBooks.sort((a, b) => b.averageRating - a.averageRating).slice(0, limit);
+    
+        return sortedBooks;
+      }
+
+    async rateABook(id: string, userId: string, grade: number): Promise<IBook> {
+        const book = await this.bookRepository.findById(id);
+
+        if (!book) {
+            throw new Error('Le livre non trouvé');
+        }
+        
+        const existingRating = book.ratings.find((r) => r.userId === userId);
+      
+        if (existingRating) {
+            throw new Error('Vous avez déjà noté ce livre');
+        }
+      
+        if (grade < 1 || grade > 5) {
+          throw new Error('La note doit être entre 1 et 5 étoiles');
+        }
+      
+        book.ratings.push({ userId, grade: grade });
+
+        const totalRating = book.ratings.reduce((sum, r) => sum + (r.grade || 0), 0);
+        book.averageRating = totalRating / book.ratings.length;
+      
+        return await this.bookRepository.updateBook(book);
+    }
+
 }

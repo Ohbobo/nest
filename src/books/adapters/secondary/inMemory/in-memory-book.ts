@@ -37,4 +37,34 @@ export class InMemoryBook implements IBookRepository {
             this.books.splice(index, 1);
         }
     }
+
+    async getBestRating(limit: number): Promise<IBook[]> {
+        const sortedBooks = this.books.sort((a, b) => b.averageRating - a.averageRating);
+        const bestRatingBooks = sortedBooks.slice(0, limit);
+        return bestRatingBooks;
+      }
+
+      async rateBook(bookId: string, userId: string, grade: number): Promise<IBook | undefined> {
+        const book = this.books.find((book) => book._id === bookId);
+    
+        if (!book) {
+          return undefined; 
+        }
+    
+        const existingRating = book.ratings.find((rating) => rating.userId === userId);
+    
+        if (existingRating) {
+          return undefined; 
+        }
+    
+        if (grade < 1 || grade > 5) {
+          return undefined;
+        }
+        book.ratings.push({ userId, grade });
+    
+        const totalRating = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
+        book.averageRating = totalRating / book.ratings.length;
+    
+        return book;
+      }
 }

@@ -10,6 +10,7 @@ export class CreateBookDto {
         grade: number,
     }]
     imageUrl: string
+    averageRating: number
 }
 
 export class UpdatedBookDto {
@@ -27,4 +28,5 @@ export class UpdatedBookDto {
         grade: number,
     }]
     imageUrl: string
+    averageRating: number
 }

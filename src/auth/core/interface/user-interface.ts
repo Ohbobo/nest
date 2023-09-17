@@ -1,8 +1,9 @@
-export interface User {
+export interface IUser {
     email: string;
     password: string;
+    userId?: string;
 }
 
-export interface UserWithId extends User {
+export interface UserWithId extends IUser {
     userId: string;
 }

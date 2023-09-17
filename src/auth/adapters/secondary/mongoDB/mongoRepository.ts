@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './mongoUserEntity';
-import { UserWithId } from 'src/auth/core/interface/user-interface';
+import { IUser, UserWithId } from 'src/auth/core/interface/user-interface';
 import { IAuthRepository } from 'src/auth/core/repository/auth-repository';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class MongooseAuthRepository implements IAuthRepository {
         return null;
     }
 
-    async createUser(user: UserWithId): Promise<void> {
-        await this.userModel.create(user);
+    async createUser(user: IUser): Promise<IUser> {
+        return await this.userModel.create(user);
     }
 }

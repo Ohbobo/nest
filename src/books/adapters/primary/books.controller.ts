@@ -1,3 +1,5 @@
+import * as sharp from 'sharp';
+
 import { 
   Body, 
   Controller, 
@@ -11,7 +13,8 @@ import {
   Req, 
   ForbiddenException, 
   UseInterceptors, 
-  UploadedFile } from '@nestjs/common';
+  UploadedFile, 
+  BadRequestException} from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from '../../core/dto/books.dto';
 import { BookService } from '../../core/application/book.service';
 import { IBook } from '../../core/interface/book-entities';
@@ -57,10 +60,13 @@ export class BooksController {
     @Body() body,
   ): Promise<IBook> {
     const userId = req.user.userId;
-    const imageUrl = `${process.env.APP_URL}/images/${file.filename}`;
     const createBookDto = JSON.parse(body.book);
 
+    await sharp(`${file.destination}/${file.filename}`).resize(200).toFile(`${file.destination}/resized_${file.filename}`);
+
     createBookDto.year = parseInt(createBookDto.year, 10);
+
+    const imageUrl = `${process.env.APP_URL}/images/resized_${file.filename}`;
 
     const book = await this.bookService.createBook(createBookDto, userId, imageUrl);
     return book;
@@ -109,13 +115,12 @@ export class BooksController {
       const userId = req.user.userId;
       const { rating } = requestBody; 
 
-      const bookToRate = await this.bookService.rateABook(id, userId, rating);
-
-      if (!bookToRate) {
-        throw new NotFoundException('Livre non trouvé');
+      try {
+        const bookToRate = await this.bookService.rateABook(id, userId, rating);
+        return bookToRate;
+      } catch (err) {
+        throw new BadRequestException(err.message);
       }
-
-      return bookToRate;
   }
 }
 

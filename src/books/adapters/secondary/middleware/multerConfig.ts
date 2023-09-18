@@ -27,7 +27,7 @@ const storage = diskStorage({
         return;
     }
 
-    callback(null, name + Date.now() + '.' + extension);
+    callback(null, `${Date.now()}_${name}`);
 },
 
 });

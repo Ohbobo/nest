@@ -1,10 +1,13 @@
-import { IAuthRepository } from '../repository/auth-repository';
-import { LoginResponseDto } from '../dto/user.dto';
+import { IUserRepository } from '../repository/UserRepository';
+import { LoginResponseDto } from '../dto/UserDto';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export class LoginUseCase {
-    constructor(private readonly userRepository: IAuthRepository) { }
+    constructor(private readonly userRepository: IUserRepository) { }
 
     async execute(email: string, password: string): Promise<LoginResponseDto | null> {
         const user = await this.userRepository.getUserByEmail(email);
@@ -13,10 +16,8 @@ export class LoginUseCase {
         if (!user || !passwordMatch) {
             throw new Error('Invalide');
         }
-
-        // TODO 'RANDOM_SECRET_KEY' comes from some configuration service (.env) 
-        // @see https://docs.nestjs.com/techniques/configuration#configuration
-        const token = jwt.sign({ userId: user.userId }, 'RANDOM_SECRET_KEY', { expiresIn: '24h' });
+        
+        const token = jwt.sign({ userId: user.userId }, process.env.JWT_KEY, { expiresIn: '24h' });
         return { userId: user.userId, token };
     }
 }

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './mongoUserEntity';
-import { IUser, UserWithId } from 'src/auth/core/interface/user-interface';
-import { IAuthRepository } from 'src/auth/core/repository/auth-repository';
+import { IUser, UserWithId } from 'src/user/core/interface/UserInterface';
+import { IUserRepository } from 'src/user/core/repository/UserRepository';
 
 @Injectable()
-export class MongooseAuthRepository implements IAuthRepository {
+export class MongooseAuthRepository implements IUserRepository {
     constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
     async getUserByEmail(email: string): Promise<UserWithId | null> {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BooksModule } from './books/module/books.module';
-import { AuthModule } from './auth/module/auth.module';
+import { UserModule } from './user/module/UserModule';
 import { DatabaseModule } from './database/database.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -12,7 +12,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       serveRoot: '/images',
     }),
     BooksModule, 
-    AuthModule, 
+    UserModule, 
     DatabaseModule
   ],
 })

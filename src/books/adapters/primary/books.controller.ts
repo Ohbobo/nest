@@ -1,15 +1,27 @@
-import { Body, Controller, Delete, Get, Param, Post, NotFoundException, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { 
+  Body, 
+  Controller, 
+  Delete, 
+  Get, 
+  Param, 
+  Post, 
+  NotFoundException, 
+  UseGuards, 
+  Put, 
+  Req, 
+  ForbiddenException, 
+  UseInterceptors, 
+  UploadedFile } from '@nestjs/common';
 import { CreateBookDto, UpdatedBookDto } from '../../core/dto/books.dto';
 import { BookService } from '../../core/application/book.service';
 import { IBook } from '../../core/interface/book-entities';
-import { AuthGuard } from 'src/auth/adapters/middleware/guard/authGuard';
+import { AuthGuard } from 'src/user/adapters/middleware/guard/authGuard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterConfig } from '../secondary/middleware/multerConfig';
 
-
 @Controller('api/books')
 export class BooksController {
-  constructor(private readonly bookService: BookService) { }
+  constructor(private readonly bookService: BookService) {}
 
   @Get()
   async getAllBooks(): Promise<IBook[]> {

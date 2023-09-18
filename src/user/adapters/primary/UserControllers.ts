@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { SignupUseCase } from '../../core/use-case/signup.use-case';
-import { LoginUseCase } from '../../core/use-case/login.auth.use-case';
-import { CreateUserDto, LoginResponseDto } from '../../core/dto/user.dto';
-import { IUser } from 'src/auth/core/interface/user-interface';
+import { SignupUseCase } from '../../core/use-case/SignupService';
+import { LoginUseCase } from '../../core/use-case/LoginService';
+import { CreateUserDto, LoginResponseDto } from '../../core/dto/UserDto';
+import { IUser } from 'src/user/core/interface/UserInterface';
 
 @Controller('api/auth')
 export class AuthController {

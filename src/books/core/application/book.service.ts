@@ -81,27 +81,32 @@ export class BookService {
 
     async rateABook(id: string, userId: string, grade: number): Promise<IBook> {
         const book = await this.bookRepository.findById(id);
-
+      
         if (!book) {
-            throw new Error('Le livre non trouvé');
+          throw new Error('Le livre non trouvé');
         }
-        
-        const existingRating = book.ratings.find((r) => r.userId === userId);
-      
-        if (existingRating) {
-            throw new Error('Vous avez déjà noté ce livre');
-        }
-      
-        if (grade < 1 || grade > 5) {
+
+        if (grade === undefined || grade < 1 || grade > 5) {
           throw new Error('La note doit être entre 1 et 5 étoiles');
         }
       
-        book.ratings.push({ userId, grade: grade });
-
+        const existingRating = book.ratings.find(rating => rating.userId === userId);
+      
+        if (existingRating) {
+          throw new Error('Vous avez déjà noté ce livre');
+        }
+      
+        book.ratings.push({ userId, grade });
+      
         const totalRating = book.ratings.reduce((sum, r) => sum + (r.grade || 0), 0);
         book.averageRating = totalRating / book.ratings.length;
-      
-        return await this.bookRepository.updateBook(book);
-    }
 
+        const updatedBook = await this.bookRepository.updateBook(book);
+      
+        if (!updatedBook) {
+          throw new Error('Échec de la mise à jour du livre');
+        }
+      
+        return updatedBook;
+      }
 }

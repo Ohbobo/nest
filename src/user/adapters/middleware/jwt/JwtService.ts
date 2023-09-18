@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './jwt-interface';
+import { JwtPayload } from './JwtInterface';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Injectable()
 export class JwtService {
-    private readonly jwtSecretKey = 'RANDOM_SECRET_KEY';
+    private readonly jwtSecretKey = process.env.JWT_KEY;
 
     async createToken(userId: JwtPayload): Promise<string> {
         return jwt.sign(userId, this.jwtSecretKey, { expiresIn: '24h' });

@@ -11,12 +11,12 @@ import { Book, BookSchema } from '../adapters/secondary/mongoDB/mongoBookEntity'
 @Module({
   imports: [
     UserModule,
-    // MongooseModule.forFeature([{ name: 'Book', schema: BookSchema }])
+    MongooseModule.forFeature([{ name: 'Book', schema: BookSchema }])
   ],
   controllers: [BooksController],
   providers: [
     { provide: BookService, useFactory: (repository: IBookRepository) => new BookService(repository), inject: ['BOOK_REPOSITORY']}, 
-    { provide: 'BOOK_REPOSITORY', useClass: InMemoryBook},
+    { provide: 'BOOK_REPOSITORY', useClass: MongooseBookRepository},
   ],
 })
 export class BooksModule {}

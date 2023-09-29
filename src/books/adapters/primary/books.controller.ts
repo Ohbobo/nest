@@ -48,29 +48,34 @@ export class BooksController {
     if (!bookById) {
       throw new NotFoundException('livre non trouvé')
     }
+    console.log(bookById)
     return bookById;
   }
 
-  @Post()
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image', MulterConfig))
-  async createBook(
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: any,
-    @Body() body,
-  ): Promise<IBook> {
-    const userId = req.user.userId;
-    const createBookDto = JSON.parse(body.book);
+@Post()
+@UseGuards(AuthGuard)
+@UseInterceptors(FileInterceptor('image', MulterConfig))
+async createBook(
+  @UploadedFile() file: Express.Multer.File,
+  @Req() req: any,
+  @Body() body,
+): Promise<IBook> {
+  const userId = req.user.userId;
+  const createBookDto = JSON.parse(body.book);
 
-    await sharp(`${file.destination}/${file.filename}`).resize(200).toFile(`${file.destination}/resized_${file.filename}`);
+  const resizedFileName = `resized_${file.filename}`;
+  
+  await sharp(`${file.destination}/${file.filename}`).resize(200).toFile(`${file.destination}/${resizedFileName}`);
 
-    createBookDto.year = parseInt(createBookDto.year, 10);
+  createBookDto.year = parseInt(createBookDto.year, 10);
 
-    const imageUrl = `${process.env.APP_URL}/images/resized_${file.filename}`;
+  const imageUrl = `${process.env.APP_URL}/images/${resizedFileName}`;
 
-    const book = await this.bookService.createBook(createBookDto, userId, imageUrl);
-    return book;
-  }
+  const book = await this.bookService.createBook(createBookDto, userId, imageUrl);
+  console.log(book)
+  return book;
+}
+
 
   @Put(':id')
   @UseGuards(AuthGuard)

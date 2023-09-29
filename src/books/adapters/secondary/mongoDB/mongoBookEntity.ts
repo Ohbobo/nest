@@ -2,6 +2,9 @@ import { Schema, SchemaFactory, Prop } from "@nestjs/mongoose";
 
 @Schema()
 export class Book {
+    @Prop({ required: true })
+    userId: string;
+
     @Prop({ required: true, unique: true })
     title: string;
 

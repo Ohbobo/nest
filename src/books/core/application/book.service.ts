@@ -77,7 +77,7 @@ export class BookService {
         const sortedBooks = allBooks.sort((a, b) => b.averageRating - a.averageRating).slice(0, limit);
     
         return sortedBooks;
-      }
+    }
 
     async rateABook(id: string, userId: string, grade: number): Promise<IBook> {
         const book = await this.bookRepository.findById(id);

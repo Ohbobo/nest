@@ -37,6 +37,7 @@ export class BookService {
             if(findABookWithId.imageUrl){
                 const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
                 fs.unlinkSync(`./images/${oldImageToReplace}`);
+                
             }
             findABookWithId.imageUrl = imageUrl;
         }
@@ -56,6 +57,9 @@ export class BookService {
         if(findABook.imageUrl){
             const imageToDelete = findABook.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
             fs.unlinkSync(`./images/${imageToDelete}`);
+
+            const baseImageToDelete = imageToDelete.replace('resized_', '');
+            fs.unlinkSync(`./images/${baseImageToDelete}`);
         }
 
         await this.bookRepository.deleteBook(id);

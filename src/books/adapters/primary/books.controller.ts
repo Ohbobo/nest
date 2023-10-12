@@ -120,7 +120,6 @@ export class BooksController {
           .resize({ width: 400 })
           .toFile(`${imageFile.destination}/${resizedFileName}`);
         imageUrl = `${process.env.APP_URL}/images/${resizedFileName}`;
-        console.log('Nouvelle URL de l\'image :', imageUrl);
       }
       const bookData = updatedBookDto.book ? JSON.parse(updatedBookDto.book) : updatedBookDto;
       const updatedBook = await this.bookService.updateBook(id, bookData, userId, imageUrl);

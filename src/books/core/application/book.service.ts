@@ -26,29 +26,37 @@ export class BookService {
         return createdBook;
       }
       
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, newImageUrl: string | undefined): Promise<IBook> {
+      async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, newImageUrl: string | undefined): Promise<IBook> {
         const findABookWithId = await this.bookRepository.findById(id);
         if (!findABookWithId) {
           throw new Error("Ce livre n'existe pas");
         }
+
+        if (findABookWithId.imageUrl) {
+          const originalImageToDelete = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+          const resizedImageToDelete = originalImageToDelete.replace('resized_', '');
+      
+          try {
+            fs.unlinkSync(`./images/${originalImageToDelete}`);
+            fs.unlinkSync(`./images/${resizedImageToDelete}`);
+          } catch (err) {
+            console.error("Erreur lors de la suppression des images:", err);
+          }
+        }
       
         if (newImageUrl) {
-          if (findABookWithId.imageUrl) {
-            const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
-            fs.unlinkSync(`./images/${oldImageToReplace}`);
-          }
           findABookWithId.imageUrl = newImageUrl;
         }
+      
         for (const key in updatedBookDto) {
-            if (key !== 'image' && updatedBookDto[key] !== undefined) {
-              findABookWithId[key] = updatedBookDto[key];
-            }
+          if (key !== 'image' && updatedBookDto[key] !== undefined) {
+            findABookWithId[key] = updatedBookDto[key];
           }
-
+        }
         const updatedBook = await this.bookRepository.updateBook(findABookWithId);
         return updatedBook;
-    }
-      
+      }
+
     async deleteBook(id: string): Promise<void> {
         const findABook = await this.bookRepository.findById(id);
 

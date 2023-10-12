@@ -15,18 +15,20 @@ export class CreateBookDto {
 
 export class UpdatedBookDto {
     @IsOptional()
-
     title: string
-
+    @IsOptional()
     author: string
-
+    @IsOptional()
     genre: string
-
+    @IsOptional()
     year: number
+    @IsOptional()
     ratings: [{
         userId: string,
         grade: number,
     }]
+    @IsOptional()
     imageUrl: string
+    @IsOptional()
     averageRating: number
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { BooksController } from '../adapters/primary/books.controller';
 import { BookService } from '../core/application/book.service';
 import { IBookRepository } from '../core/repository/book-repository';
@@ -11,7 +12,7 @@ import { Book, BookSchema } from '../adapters/secondary/mongoDB/mongoBookEntity'
 @Module({
   imports: [
     UserModule,
-    MongooseModule.forFeature([{ name: 'Book', schema: BookSchema }])
+    MongooseModule.forFeature([{ name: 'Book', schema: BookSchema }]),
   ],
   controllers: [BooksController],
   providers: [

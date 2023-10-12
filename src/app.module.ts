@@ -4,6 +4,7 @@ import { UserModule } from './user/module/UserModule';
 import { DatabaseModule } from './database/database.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     }),
     BooksModule, 
     UserModule, 
-    DatabaseModule
+    DatabaseModule,
   ],
 })
 export class AppModule {}

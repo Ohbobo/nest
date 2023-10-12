@@ -13,19 +13,27 @@ export class AuthController {
     
     @Post('signup')
     async signup(@Body() userDto: CreateUserDto): Promise<IUser> {
-        const { email, password } = userDto;
-        return await this.signupUseCase.execute(email, password);
+        try {
+            const { email, password } = userDto;
+            return await this.signupUseCase.execute(email, password);
+        } catch (error) {
+            throw new Error('Erreur lors de l\'inscription : ' + error.message);
+        }
+
     }
 
     @Post('login')
     async login(@Body() userDto: CreateUserDto): Promise<LoginResponseDto | null> {
-        const { email, password } = userDto;
-        const user = await this.loginUseCase.execute(email, password);
-
-        if(!user){
-            throw new UnauthorizedException('Invalide');
+        try {
+            const { email, password } = userDto;
+            const user = await this.loginUseCase.execute(email, password);
+            if(!user){
+                throw new UnauthorizedException('Invalide');
+            }
+            return user;
+        } catch (error) {
+            throw new Error('Erreur lors de la connexion : ' + error.message);
         }
-        return user;
     }
     
 }

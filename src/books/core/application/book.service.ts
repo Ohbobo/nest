@@ -12,7 +12,6 @@ export class BookService {
     }
 
     async getOneBook(id: string): Promise<IBook> {
-        console.log(id);
         return this.bookRepository.findById(id);
     }
 
@@ -26,27 +25,30 @@ export class BookService {
         const createdBook = await this.bookRepository.createBook(newBook, userId, imageUrl);
         return createdBook;
       }
-
-    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, imageUrl?: string): Promise<IBook> {
+      
+    async updateBook(id: string, updatedBookDto: UpdatedBookDto, userId: string, newImageUrl: string | undefined): Promise<IBook> {
         const findABookWithId = await this.bookRepository.findById(id);
-        if(!findABookWithId){
-            throw new Error("Ce livre n'existe pas");
+        if (!findABookWithId) {
+          throw new Error("Ce livre n'existe pas");
         }
-
-        if(imageUrl) {
-            if(findABookWithId.imageUrl){
-                const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
-                fs.unlinkSync(`./images/${oldImageToReplace}`);
-                
+      
+        if (newImageUrl) {
+          if (findABookWithId.imageUrl) {
+            const oldImageToReplace = findABookWithId.imageUrl.replace(`${process.env.APP_URL}/images/`, '');
+            fs.unlinkSync(`./images/${oldImageToReplace}`);
+          }
+          findABookWithId.imageUrl = newImageUrl;
+        }
+        for (const key in updatedBookDto) {
+            if (key !== 'image' && updatedBookDto[key] !== undefined) {
+              findABookWithId[key] = updatedBookDto[key];
             }
-            findABookWithId.imageUrl = imageUrl;
-        }
+          }
 
-        const updatedBook = { ...findABookWithId, ...updatedBookDto };
-        const saveBook = await this.bookRepository.updateBook(updatedBook);
-        return saveBook;
+        const updatedBook = await this.bookRepository.updateBook(findABookWithId);
+        return updatedBook;
     }
-
+      
     async deleteBook(id: string): Promise<void> {
         const findABook = await this.bookRepository.findById(id);
 
@@ -104,6 +106,9 @@ export class BookService {
       
         const totalRating = book.ratings.reduce((sum, r) => sum + (r.grade || 0), 0);
         book.averageRating = totalRating / book.ratings.length;
+
+        book.averageRating = Math.min(5, Math.max(0.5, book.averageRating));
+        book.averageRating = Math.round(book.averageRating * 10) / 10;
 
         const updatedBook = await this.bookRepository.updateBook(book);
       

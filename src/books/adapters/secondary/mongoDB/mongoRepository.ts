@@ -28,8 +28,18 @@ export class MongooseBookRepository implements IBookRepository {
         return savedBook.toJSON() as IBook;
     }
     async updateBook(book: IBook): Promise<IBook | undefined> {
-        const updatedBook = await this.bookModel.findByIdAndUpdate(book._id, book, { new: true }).exec();
-        return updatedBook ? updatedBook.toObject() as IBook : undefined;
+        try {
+            const updatedBook = await this.bookModel.findByIdAndUpdate(book._id, book, { new: true }).exec();
+    
+            if (!updatedBook) {
+                throw new Error("Livre introuvable pour la mise à jour");
+            }
+    
+            return updatedBook.toObject() as IBook;
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour du livre :", error);
+            throw error;
+        }
     }
 
     async deleteBook(id: string): Promise<void> {
